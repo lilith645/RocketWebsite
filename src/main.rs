@@ -19,9 +19,10 @@ use std::{fs, io};
 
 #[derive(serde::Serialize)]
 struct TemplateContext {
-    title: &'static str,
+    title: String,
     name: Option<String>,
     items: Vec<String>,
+    location: String,
     // This key tells handlebars which template is the parent.
     parent: &'static str,
 }
@@ -29,9 +30,10 @@ struct TemplateContext {
 #[get("/")]
 fn index() -> Template {
   Template::render("about", &TemplateContext {
-      title: "About",
+      title: format!("About"),
       name: None,
       items: vec![format!("Four"), format!("Five"), format!("Six")],
+      location: format!(""),
       parent: "layout",
   })
 }
@@ -73,16 +75,28 @@ fn hello(name: &RawStr) -> Template {//-> String {
 }
 
 #[get("/games")]
-fn games() -> Template {
+fn game_grid() -> Template {
   let mut entries = fs::read_dir("./games/").unwrap()
         .map(|res| res.map(|e| e.path().to_str().unwrap().to_string().split_off(8)))
         .collect::<Result<Vec<_>, io::Error>>().unwrap();
   println!("{:?}", entries);
   
   Template::render("game_grid", &TemplateContext {
-    title: "Games",
+    title: format!("Games"),
     name: None,
     items: entries,
+    location: format!(""),
+    parent: "layout",
+  })
+}
+
+#[get("/<game_name>")]
+fn game(game_name: &RawStr) -> Template {
+  Template::render("game", &TemplateContext {
+    title: format!("{}", game_name),
+    name: None,
+    items: vec![format!("")],
+    location: format!("{}", game_name),
     parent: "layout",
   })
 }
@@ -102,9 +116,11 @@ fn css(file: PathBuf) -> Option<NamedFile> {
     NamedFile::open(Path::new("templates/css/").join(file)).ok()
 }
 
-#[get("/games/<file..>")]
+#[get("/games/images/<file..>")]
 fn game_images(file: PathBuf) -> Option<NamedFile> {
-    NamedFile::open(Path::new("games/").join(file)).ok()
+  let p = Path::new("games/").join(file);
+  println!("stuff is here?: {:?}", p);
+  NamedFile::open(p).ok()
 }
 
 #[catch(404)]
@@ -134,7 +150,7 @@ fn wow_helper(
 
 fn main() {
     rocket::ignite()
-      .mount("/", routes![index, redirect, flash, hello, games, game_images, resume, files, css])
+      .mount("/", routes![index, redirect, flash, hello, game_grid, game, game_images, resume, files, css])
       .register(catchers![not_found])
       .attach(Template::custom(|engines| {
             engines.handlebars.register_helper("wow", Box::new(wow_helper));

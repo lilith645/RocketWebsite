@@ -1,11 +1,27 @@
 {{#*inline "page"}}
 
 <section id="games">
-  <link rel="stylesheet" type="text/css" href="css/grid.css">
-
+  <link rel="stylesheet" type="text/css" href="/css/grid.css">
+  <link rel="stylesheet" type="text/css" href="/css/flipcard.css">
+  
   <div class="grid-container">
     {{#each items}}
-      <div class="grid-item"><a href="/games/Steel&Silver/">{{ this }}<img src="games/Steel&Silver/Icon.png" alt="SteelAndSilver"></a></div>
+      <a href="/{{ this }}">
+      <div class="grid-item">
+       <div class="flip-card">
+         <div class="flip-card-inner">
+           <div class="flip-card-front">
+             <img src="games/images/{{ this }}/Icon.png" alt="{{ this }}" style="width:256px;height:256px;">
+           </div>
+           <div class="flip-card-back">
+             <h1>{{ this }}</h1>
+             <p>Architect & Engineer</p>
+             <p>We love that guy</p>
+           </div>
+          </div>
+        </div> 
+      </div>
+      </a>
     {{/each}}
   </div>
 </section>
