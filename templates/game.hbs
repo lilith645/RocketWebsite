@@ -1,0 +1,17 @@
+{{#*inline "page"}}
+
+<section id="games">
+  <link rel="stylesheet" type="text/css" href="css/grid.css">
+
+  <div class="grid-container">
+    {{#each items}}
+      <div class="grid-item"><a href="/games/Steel&Silver/">{{ this }}<img src="games/Steel&Silver/Icon.png" alt="SteelAndSilver"></a></div>
+    {{/each}}
+  </div>
+</section>
+
+{{/inline}}
+{{~> (parent)~}}
+
+
+
